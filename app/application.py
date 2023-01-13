@@ -133,10 +133,23 @@ st.plotly_chart(fig, use_container_width = True)
 
 ##########
 
+
+def highlight_percentage(done_percent):
+	done_percent = int(done_percent.replace('%', ''))
+	if done_percent < 20:
+		return 'background-color: rgb(247,252,185)'
+	if done_percent < 50:
+		return 'background-color: rgb(120,198,121)'
+	if done_percent < 80:
+		return 'background-color: rgb(35,132,67)'
+	if done_percent == 100:
+		return 'background-color: rgb(0,69,41)'
+
+
 st.subheader('Výsledky v krajích')
 st.text('(Absolutní počet hlasů)')
 kraje = helpers.data_loading.get_kraje(connection)
-st.dataframe(kraje, use_container_width = True)
+st.dataframe(kraje.style.applymap(highlight_percentage, subset = ['Zpracováno']), use_container_width = True)
 
 ########
 
