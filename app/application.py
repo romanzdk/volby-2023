@@ -64,8 +64,36 @@ def get_last_update():
     cursor.execute(
         "select last_update from overall_over_time order by last_update DESC limit 1;"
     )
-    return str(cursor.fetchone()[0].time())
+    try:
+        return str(cursor.fetchone()[0].time())
+    except TypeError:
+        return None
+    finally:
+        cursor.close()
 
+
+def get_additional_data():
+    return pd.read_sql(
+        "select * from additional_info ORDER BY last_update DESC LIMIT 1;", connection
+    ).to_dict()
+
+
+def get_kraje():
+    df = pd.read_sql(
+        "select * from kraje ORDER BY last_update DESC LIMIT 14;", connection
+    ).drop("last_update", axis=1)
+    for col in df.columns:
+        if col != "zpracovano":
+            try:
+                df[col] = df[col].astype(int)
+            except ValueError:
+                pass
+    df["zpracovano"] = ["{:.0%}".format(i) for i in df["zpracovano"]]
+
+    return df
+
+
+###########
 
 st.title("Volby prezidenta ČR 2023")
 st.info("Stránka je automaticky aktualizována každé 2 minuty")
@@ -82,6 +110,65 @@ with col2:
 
 ###########
 
+st.subheader("Doplňující údaje")
+col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns(10)
+
+additional_data = get_additional_data()
+
+with col1:
+    st.metric(
+        label="Kolo",
+        value=int(additional_data["KOLO"][0]),
+    )
+with col2:
+    st.metric(
+        label="Celkem okrsků",
+        value=int(additional_data["OKRSKY_CELKEM"][0]),
+    )
+with col3:
+    st.metric(
+        label="Zpracováno okrsků",
+        value=int(additional_data["OKRSKY_ZPRAC"][0]),
+    )
+with col4:
+    st.metric(
+        label="Zpracováno okrsků %",
+        value=int(additional_data["OKRSKY_ZPRAC_PROC"][0]),
+    )
+with col5:
+    st.metric(
+        label="Zapsáno voličů",
+        value=int(additional_data["ZAPSANI_VOLICI"][0]),
+    )
+with col6:
+    st.metric(
+        label="Vydáno obálek",
+        value=int(additional_data["VYDANE_OBALKY"][0]),
+    )
+with col7:
+    st.metric(
+        label="Účast %",
+        value=int(additional_data["UCAST_PROC"][0]),
+    )
+with col8:
+    st.metric(
+        label="Odevzdané obálky",
+        value=int(additional_data["ODEVZDANE_OBALKY"][0]),
+    )
+with col9:
+    st.metric(
+        label="Platné hlasy",
+        value=int(additional_data["PLATNE_HLASY"][0]),
+    )
+with col10:
+    st.metric(
+        label="Platné hlasy %",
+        value=int(additional_data["PLATNE_HLASY_PROC"][0]),
+    )
+
+
+###########
+
 st.subheader("Celkové výsledky")
 chart = px.bar(
     get_last_data(),
@@ -91,6 +178,7 @@ chart = px.bar(
     labels={"index": "Jméno", "percentage": "% hlasů"},
     orientation="h",
     text="percentage",
+    color_discrete_map=settings.static.COLORS,
 )
 fig = go.Figure(chart)
 fig.update_yaxes(showgrid=False)
@@ -108,9 +196,24 @@ line_chart = px.line(
     color="name",
     labels={"name": "Jméno", "value": "% hlasů", "last_update": "Čas"},
     markers="x",
+    color_discrete_map=settings.static.COLORS,
 )
 fig = go.Figure(line_chart)
 fig.update_yaxes(showgrid=False)
 st.plotly_chart(fig, use_container_width=True)
 
-st.write(overall_over_time_data)
+# st.write(overall_over_time_data)
+
+##########
+
+st.subheader("Výsledky v krajích")
+st.text("(Absolutní počet hlasů)")
+st.dataframe(get_kraje(), use_container_width=True)
+
+st.markdown("---")
+st.markdown(
+    """<p style='text-align: center;'>Roman Žydyk, 2023, <a href="https://romanzdk.com">romanzdk.com</a></p>""",
+    unsafe_allow_html=True,
+)
+
+connection.close()
