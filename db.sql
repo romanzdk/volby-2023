@@ -7,7 +7,7 @@ CREATE TABLE overall_over_time (
 	"Diviš" NUMERIC,
 	"Fischer" NUMERIC,
 	"Hilšer" NUMERIC,
-	"Zima" NUMERIC,
+	"Zima" NUMERIC
 );
 INSERT INTO public.overall_over_time
 VALUES (

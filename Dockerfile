@@ -10,9 +10,11 @@ WORKDIR /usr/src/app
 
 COPY poetry.lock pyproject.toml /usr/src/app/
 
-RUN poetry install --no-root
+RUN poetry install --no-root --without dev
 
 COPY . /usr/src/app/
+
+RUN chmod +x entrypoint.sh
 
 RUN chown -R nobody /usr/src/app/
 
@@ -21,4 +23,4 @@ USER nobody
 
 ENV PYTHONPATH /usr/src/app
 
-CMD ["streamlit", "run", "app/application.py"]
+CMD ["./entrypoint.sh"]
