@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 mkdir -p ~/.streamlit/
-echo "
+echo """
 [server]
 headless = true
 port = $PORT
-enableCORS = false" > ~/.streamlit/config.toml
-streamlit run app/application.py
+enableCORS = false""" > ~/.streamlit/config.toml
+streamlit run app/application.py --theme.base "light"
