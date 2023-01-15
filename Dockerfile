@@ -16,11 +16,9 @@ COPY . /usr/src/app/
 
 RUN chmod +x entrypoint.sh
 
-RUN chown -R nobody /usr/src/app/
-
-RUN usermod --home /tmp nobody
-USER nobody
-
 ENV PYTHONPATH /usr/src/app
+
+# because of Azure Web App
+EXPOSE 80
 
 CMD ["./entrypoint.sh"]
