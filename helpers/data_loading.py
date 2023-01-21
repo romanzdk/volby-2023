@@ -16,24 +16,34 @@ def get_connection():
 	)
 
 
-def get_main_data(connection):
+def _get_sql_parameters(first_round: bool) -> tuple[str, str]:
+	if first_round:
+		return f"<'{settings.static.FIRST_ROUND_END_DATE}'", settings.static.CANDIDATES_STRING
+	return f">'{settings.static.FIRST_ROUND_END_DATE}'", settings.static.SECOND_ROUND_CANDIDATES_STRING
+
+
+def get_main_data(connection, first_round = False):
+	time_limit, candidates_string = _get_sql_parameters(first_round)
 	return pd.read_sql(
 		f'''
 			SELECT 
 				last_update, 
-				{settings.static.CANDIDATES_STRING}
+				{candidates_string}
 			FROM overall_over_time
+			WHERE last_update {time_limit}
 			ORDER BY last_update DESC;
 		''',
 		connection,
 	)
 
 
-def get_additional_data(connection):
+def get_additional_data(connection, first_round = False):
+	time_limit, _ = _get_sql_parameters(first_round)
 	return pd.read_sql(
-		'''
+		f'''
 			SELECT * 
-			FROM additional_info 
+			FROM additional_info
+			WHERE last_update {time_limit}
 			ORDER BY last_update DESC 
 			LIMIT 1;
 		''',
@@ -42,8 +52,11 @@ def get_additional_data(connection):
 
 
 def get_overall_data(df):
-	df = df.sort_values(by = 0, ascending = False)
-	df[0] = df[0].apply(lambda x: f'{x:.2%}')
+	try:
+		df = df.sort_values(by = 0, ascending = False)
+		df[0] = df[0].apply(lambda x: f'{x:.2%}')
+	except KeyError:
+		pass
 	df = df.reset_index()
 	df.columns = ['Jméno', '% hlasů']
 	return df
@@ -57,14 +70,16 @@ def get_overall_data_over_time(df):
 	return df
 
 
-def get_regions_data(connection):
+def get_regions_data(connection, first_round = False):
+	time_limit, candidates_string = _get_sql_parameters(first_round)
 	return pd.read_sql(
 		f'''
 			SELECT 
 				kraj as "Kraj",
-				{settings.static.CANDIDATES_STRING},
+				{candidates_string},
 				ROUND("zpracovano" * 100, 2) as "Zpracováno %"
 			FROM kraje
+			WHERE last_update {time_limit}
 			ORDER BY last_update DESC, kraj
 			LIMIT 14;
 		''',
@@ -82,8 +97,10 @@ def get_map_data(regions_data):
 		)
 		.sort_values('hlasů')
 		.drop_duplicates(['Kraj'], keep = 'last')
-		.drop('hlasů', axis = 1)
+		# .drop('hlasů', axis = 1)
 	)
+	df['Jméno'] = df.apply(lambda row: row['Jméno'] if row['hlasů'] != 0 else 'N/A', axis = 1)
+	df = df.drop('hlasů', axis = 1)
 	return (
 		gpd.read_file('data/VUSC_P.shp')
 		.to_crs(pyproj.CRS.from_epsg(4326))
