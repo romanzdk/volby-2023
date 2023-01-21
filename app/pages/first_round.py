@@ -3,7 +3,6 @@ import logging
 import os
 
 from matplotlib.lines import Line2D
-from streamlit_autorefresh import st_autorefresh
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
@@ -20,7 +19,7 @@ st.set_page_config(page_title = settings.static.TITLE, page_icon = settings.stat
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 st.markdown(
-	f'''
+	'''
     <style>
         .css-1vencpc {{width: 10rem!important;min-width:100px!important;}}
 		.css-163ttbj {{width: 10rem!important;min-width:100px!important;}}

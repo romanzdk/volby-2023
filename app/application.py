@@ -20,7 +20,7 @@ import settings.static
 st.set_page_config(page_title = settings.static.TITLE, page_icon = settings.static.ICON, layout = 'wide')
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.markdown(
-	f'''
+	'''
     <style>
         .css-1vencpc {{width: 10rem!important;min-width:100px!important;}}
 		.css-163ttbj {{width: 10rem!important;min-width:100px!important;}}
@@ -175,6 +175,21 @@ st.dataframe(regions_data_styled, use_container_width = True)
 
 ########
 
+st.subheader('Výsledky v obcích')
+st.text('(Absolutní počet hlasů)')
+try:
+	cities_data = helpers.data_loading.get_cities_data(connection)
+	for col in cities_data.columns:
+		cities_data[col] = cities_data[col].apply(lambda x: helpers.formatting.format_thousands(x))
+	options = st.multiselect('Vybraný okrsek', cities_data.index.to_list())
+	if options:
+		cities_data = cities_data[cities_data.index.isin(options)]
+	st.dataframe(cities_data, use_container_width = True)
+except:
+	st.info('Data se nepodařilo získat :( Zkuste to později.')
+
+########
+
 st.subheader('Kandidát s nejvyšším počtem hlasů dle Kraje')
 map_data = helpers.data_loading.get_map_data(raw_regions_data)
 fig, ax = plt.subplots()
@@ -211,7 +226,7 @@ try:
 			st.image('x.png')
 			os.remove('x.png')
 except ValueError:
-	st.info('Mapu se nepodařilo vygenerovat :( Zkuste stránku obnovit.')
+	st.info('Mapu se nepodařilo vygenerovat :( Zkuste to později.')
 
 ########
 

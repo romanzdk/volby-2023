@@ -1,5 +1,8 @@
 def format_thousands(number):
-	return f'{int(number):,}'.replace(',', ' ')
+	try:
+		return f'{int(number):,}'.replace(',', ' ')
+	except ValueError:
+		return 0
 
 
 def reduce_number(num, precision = 2, suffixes = ('', 'K', 'M', 'G', 'T', 'P')):

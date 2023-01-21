@@ -87,6 +87,22 @@ def get_regions_data(connection, first_round = False):
 	)
 
 
+def get_cities_data(connection):
+	return pd.read_sql(
+		'''
+			SELECT 
+				nazevobce as "Město",
+				"Jméno",
+				"Hlasů"
+			FROM cities c
+			LEFT JOIN city_mapping cm
+				ON cm.obec = c."Město"
+			ORDER BY 1
+		''',
+		connection,
+	).pivot_table(index = 'Město', columns = 'Jméno', values = 'Hlasů')
+
+
 def get_map_data(regions_data):
 	df = (
 		regions_data.drop('Zpracováno %', axis = 1)
