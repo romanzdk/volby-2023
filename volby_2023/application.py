@@ -11,7 +11,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pytz
 import streamlit as st
-import streamlit_folium
 
 import helpers.data_loading
 import helpers.formatting

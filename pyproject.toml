@@ -17,6 +17,7 @@ geopandas = "^0.12.2"
 matplotlib = "^3.6.3"
 st-pages = "^0.3.1"
 psycopg2-binary = "^2.9.5"
+folium = "^0.14.0"
 
 [build-system]
 requires = ["poetry-core"]
