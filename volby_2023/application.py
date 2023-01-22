@@ -24,10 +24,10 @@ st.set_page_config(page_title = settings.static.TITLE, page_icon = settings.stat
 
 # sidebar width
 st.markdown(
-	'''
+	r'''
     <style>
-        .css-1vencpc {{width: 10rem!important;min-width:100px!important;}}
-		.css-163ttbj {{width: 10rem!important;min-width:100px!important;}}
+        .css-1vencpc {width: 10rem!important;min-width:100px!important;}
+		.css-163ttbj {width: 10rem!important;min-width:100px!important;}
     </style>
 ''',
 	unsafe_allow_html = True,
