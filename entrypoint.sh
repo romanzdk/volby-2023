@@ -5,4 +5,4 @@ echo """
 headless = true
 port = $PORT
 enableCORS = false""" > ~/.streamlit/config.toml
-streamlit run app/application.py --theme.base "light"
+streamlit run volby_2023/application.py --theme.base "light"
