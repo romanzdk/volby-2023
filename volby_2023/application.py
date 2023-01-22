@@ -11,6 +11,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pytz
 import streamlit as st
+import matplotlib
 
 import helpers.data_loading
 import helpers.formatting
@@ -20,7 +21,6 @@ import settings.static
 
 
 st.set_page_config(page_title = settings.static.TITLE, page_icon = settings.static.ICON, layout = 'wide')
-# st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # sidebar width
 st.markdown(
@@ -35,8 +35,8 @@ st.markdown(
 
 show_pages(
 	[
-		Page('app/application.py', '2.kolo', ':two:'),
-		Page('app/pages/first_round.py', '1. kolo', ':one:'),
+		Page('volby_2023/application.py', '2.kolo', ':two:'),
+		Page('volby_2023/pages/first_round.py', '1. kolo', ':one:'),
 	]
 )
 
@@ -204,9 +204,6 @@ make_map_responsive = '''
  </style>
 '''
 st.markdown(make_map_responsive, unsafe_allow_html = True)
-import matplotlib
-
-
 cmap = matplotlib.colors.ListedColormap([v for k, v in settings.static.SECOND_ROUND_COLORS.items()])
 
 with st.spinner('Mapa se načítá...'):
