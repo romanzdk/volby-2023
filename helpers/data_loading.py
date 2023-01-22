@@ -108,19 +108,21 @@ def get_map_data(regions_data):
 		regions_data.drop('Zpracováno %', axis = 1)
 		.melt(
 			id_vars = ['Kraj'],
-			var_name = 'Jméno',
+			var_name = 'Vítěz',
 			value_name = 'hlasů',
 		)
 		.sort_values('hlasů')
 		.drop_duplicates(['Kraj'], keep = 'last')
 		# .drop('hlasů', axis = 1)
 	)
-	df['Jméno'] = df.apply(lambda row: row['Jméno'] if row['hlasů'] != 0 else 'N/A', axis = 1)
+	df['Vítěz'] = df.apply(lambda row: row['Vítěz'] if row['hlasů'] != 0 else '-', axis = 1)
 	df = df.drop('hlasů', axis = 1)
 	return (
 		gpd.read_file('data/VUSC_P.shp')
 		.to_crs(pyproj.CRS.from_epsg(4326))
 		.drop(['KOD', 'REGS_KOD', 'NUTS3_KOD'], axis = 1)
-		.set_index('NAZEV')
+		.rename(columns = {'NAZEV': 'Kraj'})
+		.set_index('Kraj')
 		.join(df.set_index('Kraj'))
+		.join(regions_data.set_index('Kraj').drop('Zpracováno %', axis = 1))
 	)

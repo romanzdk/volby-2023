@@ -5,20 +5,25 @@ import os
 from matplotlib.lines import Line2D
 from st_pages import Page, show_pages
 from streamlit_autorefresh import st_autorefresh
+import folium
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 import pytz
 import streamlit as st
+import streamlit_folium
 
 import helpers.data_loading
 import helpers.formatting
+import helpers.mapping
 import settings.base
 import settings.static
 
 
 st.set_page_config(page_title = settings.static.TITLE, page_icon = settings.static.ICON, layout = 'wide')
-st.set_option('deprecation.showPyplotGlobalUse', False)
+# st.set_option('deprecation.showPyplotGlobalUse', False)
+
+# sidebar width
 st.markdown(
 	'''
     <style>
@@ -186,47 +191,46 @@ try:
 		cities_data = cities_data[cities_data.index.isin(options)]
 	st.dataframe(cities_data, use_container_width = True)
 except:
-	st.info('Data se nepodařilo získat :( Zkuste to později.')
+	st.info('Data se nepodařilo získat :( Zkuste to prosím později.')
 
 ########
 
 st.subheader('Kandidát s nejvyšším počtem hlasů dle Kraje')
 map_data = helpers.data_loading.get_map_data(raw_regions_data)
-fig, ax = plt.subplots()
-ax = map_data.plot(color = 'white', edgecolor = 'white')
-try:
-	with st.spinner('Mapa se načítá...'):
-		map_data.plot(
-			ax = ax,
-			color = map_data['Jméno'].map(settings.static.SECOND_ROUND_COLORS),
-			legend = True,
-			edgecolor = 'white',
-			linewidth = 0.2,
-		)
 
-		lines = [
-			Line2D([0], [0], color = c, linewidth = 1, linestyle = '', marker = 's')
-			for c in settings.static.SECOND_ROUND_COLORS.values()
-		]
-		plt.legend(
-			lines,
-			settings.static.SECOND_ROUND_COLORS.keys(),
-			fontsize = '5',
-			frameon = False,
-		)
-		plt.box(False)
-		plt.axis('off')
-		# st.pyplot()
-		plt.savefig('x', dpi = 600)
-		try:
-			st.image('x.png')
-			os.remove('x.png')
-		except (FileNotFoundError, st.runtime.media_file_storage.MediaFileStorageError):
-			plt.savefig('x', dpi = 600)
-			st.image('x.png')
-			os.remove('x.png')
-except ValueError:
-	st.info('Mapu se nepodařilo vygenerovat :( Zkuste to později.')
+# map width
+make_map_responsive = '''
+ <style>
+ [title~="st.iframe"] { width: 100%}
+ </style>
+'''
+st.markdown(make_map_responsive, unsafe_allow_html = True)
+import matplotlib
+
+
+cmap = matplotlib.colors.ListedColormap([v for k, v in settings.static.SECOND_ROUND_COLORS.items()])
+
+with st.spinner('Mapa se načítá...'):
+	helpers.mapping.folium_static(
+		map_data.explore(
+			column = 'Vítěz',
+			popup = True,
+			tiles = 'https://romanzdk.com/wp-content/uploads/2023/01/white.png',
+			zoom_control = False,
+			prefer_canvas = True,
+			control_scale = False,
+			legend = True,
+			attr = ' ',
+			cmap = cmap,
+			# cmap=settings.static.SECOND_ROUND_COLORS.values(),
+			style_kwds = dict(color = 'white', fillOpacity = 1),
+			map_kwds = dict(dragging = False, scrollWheelZoom = False),
+		),
+		title = 'Legenda',
+		colors = settings.static.SECOND_ROUND_COLORS.values(),
+		labels = settings.static.SECOND_ROUND_COLORS.keys(),
+	)
+
 
 ########
 

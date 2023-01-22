@@ -10,7 +10,7 @@ COLORS = {
 	'Diviš': '#FFA15A',
 	'Zima': '#FECB52',
 }
-SECOND_ROUND_COLORS = {'Pavel': '#00CC96', 'Babiš': '#636EFA', 'N/A': '#8f8d8d'}
+SECOND_ROUND_COLORS = {'-': '#8f8d8d', 'Babiš': '#636EFA', 'Pavel': '#00CC96'}
 CANDIDATES_STRING = '"' + '", "'.join(COLORS) + '"'
 SECOND_ROUND_CANDIDATES_STRING = '"Pavel", "Babiš"'
 

@@ -167,36 +167,38 @@ map_data = helpers.data_loading.get_map_data(raw_regions_data)
 fig, ax = plt.subplots()
 ax = map_data.plot(color = 'white', edgecolor = 'white')
 # plt.margins(x=0.3)
-map_data.plot(
-	ax = ax,
-	color = map_data['Jméno'].map(settings.static.COLORS),
-	legend = True,
-	edgecolor = 'white',
-	linewidth = 0.2,
-)
-
-lines = [
-	Line2D([0], [0], color = c, linewidth = 1, linestyle = '', marker = 's')
-	for c in settings.static.COLORS.values()
-]
-plt.legend(
-	lines,
-	settings.static.COLORS.keys(),
-	fontsize = '5',
-	frameon = False,
-)
-plt.box(False)
-plt.axis('off')
-# st.pyplot()
-plt.savefig('x', dpi = 600)
 try:
-	st.image('x.png')
-	os.remove('x.png')
-except (FileNotFoundError, st.runtime.media_file_storage.MediaFileStorageError):
-	plt.savefig('x', dpi = 600)
-	st.image('x.png')
-	os.remove('x.png')
+	map_data.plot(
+		ax = ax,
+		color = map_data['Vítěz'].map(settings.static.COLORS),
+		legend = True,
+		edgecolor = 'white',
+		linewidth = 0.2,
+	)
 
+	lines = [
+		Line2D([0], [0], color = c, linewidth = 1, linestyle = '', marker = 's')
+		for c in settings.static.COLORS.values()
+	]
+	plt.legend(
+		lines,
+		settings.static.COLORS.keys(),
+		fontsize = '5',
+		frameon = False,
+	)
+	plt.box(False)
+	plt.axis('off')
+	# st.pyplot()
+	plt.savefig('x', dpi = 600)
+	try:
+		st.image('x.png')
+		os.remove('x.png')
+	except (FileNotFoundError, st.runtime.media_file_storage.MediaFileStorageError):
+		plt.savefig('x', dpi = 600)
+		st.image('x.png')
+		os.remove('x.png')
+except ValueError:
+	st.info('Data se nepodařilo získat :( Zkuste to prosím později.')
 ########
 
 st.markdown('---')
