@@ -144,7 +144,7 @@ regions_data_table = raw_regions_data.copy()
 for col in regions_data_table.columns:
 	if col in {'Kraj', 'Zpracováno %'}:
 		continue
-	regions_data_table[col] = regions_data_table[col].apply(lambda x: helpers.formatting.format_thousands(x))
+	regions_data_table[col] = regions_data_table[col].apply(helpers.formatting.format_thousands)
 regions_data_table['Zpracováno %'] = [f'{x:.2f}' for x in regions_data_table['Zpracováno %']]
 regions_data_styled = regions_data_table.style.applymap(
 	helpers.formatting.highlight_percentage,

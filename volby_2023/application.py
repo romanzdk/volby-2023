@@ -1,13 +1,9 @@
 import datetime
 import logging
-import os
 
-from matplotlib.lines import Line2D
 from st_pages import Page, show_pages
 from streamlit_autorefresh import st_autorefresh
-import folium
 import matplotlib
-import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 import pytz
@@ -169,7 +165,7 @@ regions_data_table = raw_regions_data.copy()
 for col in regions_data_table.columns:
 	if col in {'Kraj', 'Zpracováno %'}:
 		continue
-	regions_data_table[col] = regions_data_table[col].apply(lambda x: helpers.formatting.format_thousands(x))
+	regions_data_table[col] = regions_data_table[col].apply(helpers.formatting.format_thousands)
 regions_data_table['Zpracováno %'] = [f'{x:.2f}' for x in regions_data_table['Zpracováno %']]
 regions_data_table = regions_data_table.set_index('Kraj')
 regions_data_styled = regions_data_table.style.applymap(
@@ -185,7 +181,7 @@ st.text('(Absolutní počet hlasů)')
 try:
 	cities_data = helpers.data_loading.get_cities_data(connection)
 	for col in cities_data.columns:
-		cities_data[col] = cities_data[col].apply(lambda x: helpers.formatting.format_thousands(x))
+		cities_data[col] = cities_data[col].apply(helpers.formatting.format_thousands)
 	options = st.multiselect('Vybraný okrsek', cities_data.index.to_list())
 	if options:
 		cities_data = cities_data[cities_data.index.isin(options)]
@@ -211,7 +207,6 @@ with st.spinner('Mapa se načítá...'):
 	helpers.mapping.folium_static(
 		map_data.explore(
 			column = 'Vítěz',
-			popup = True,
 			tiles = 'https://romanzdk.com/wp-content/uploads/2023/01/white.png',
 			zoom_control = False,
 			prefer_canvas = True,

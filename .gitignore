@@ -1,3 +1,21 @@
-.env
+# Python compiled objects
+*.pyc
 __pycache__
+
+# Python virtualenv
+env
+
+# pytest .cache folder (http://doc.pytest.org/en/latest/cache.html) & other test artifacts
+.cache
+.coverage
 .mypy_cache
+
+# Editors
+.idea
+.vscode
+
+# Jupyter Notebook autosaves
+.ipynb_checkpoints
+
+# Local environment variables
+.env

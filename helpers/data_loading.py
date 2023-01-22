@@ -6,7 +6,7 @@ import pyproj
 import settings.base
 
 
-def get_connection():
+def get_connection() -> 'psycopg2.connection':
 	return psycopg2.connect(
 		database = settings.base.DATABASE,
 		host = settings.base.DB_HOST,
@@ -22,7 +22,7 @@ def _get_sql_parameters(first_round: bool) -> tuple[str, str]:
 	return f">'{settings.static.FIRST_ROUND_END_DATE}'", settings.static.SECOND_ROUND_CANDIDATES_STRING
 
 
-def get_main_data(connection, first_round = False):
+def get_main_data(connection: 'psycopg2.connection', first_round: bool = False) -> pd.DataFrame:
 	time_limit, candidates_string = _get_sql_parameters(first_round)
 	return pd.read_sql(
 		f'''
@@ -37,7 +37,7 @@ def get_main_data(connection, first_round = False):
 	)
 
 
-def get_additional_data(connection, first_round = False):
+def get_additional_data(connection: 'psycopg2.connection', first_round: bool = False) -> pd.DataFrame:
 	time_limit, _ = _get_sql_parameters(first_round)
 	return pd.read_sql(
 		f'''
@@ -51,7 +51,7 @@ def get_additional_data(connection, first_round = False):
 	).to_dict()
 
 
-def get_overall_data(df):
+def get_overall_data(df: pd.DataFrame) -> pd.DataFrame:
 	try:
 		df = df.sort_values(by = 0, ascending = False)
 		df[0] = df[0].apply(lambda x: f'{x:.2%}')
@@ -62,7 +62,7 @@ def get_overall_data(df):
 	return df
 
 
-def get_overall_data_over_time(df):
+def get_overall_data_over_time(df: pd.DataFrame) -> pd.DataFrame:
 	df.set_index('last_update')
 	df = df.melt(id_vars = ['last_update'], var_name = 'name')
 	df['value'] = df['value'].apply(lambda x: f'{x:.2%}')
@@ -70,7 +70,7 @@ def get_overall_data_over_time(df):
 	return df
 
 
-def get_regions_data(connection, first_round = False):
+def get_regions_data(connection: 'psycopg2.connection', first_round: bool = False) -> pd.DataFrame:
 	time_limit, candidates_string = _get_sql_parameters(first_round)
 	return pd.read_sql(
 		f'''
@@ -87,7 +87,7 @@ def get_regions_data(connection, first_round = False):
 	)
 
 
-def get_cities_data(connection):
+def get_cities_data(connection: 'psycopg2.connection') -> pd.DataFrame:
 	return pd.read_sql(
 		'''
 			SELECT 
@@ -103,7 +103,7 @@ def get_cities_data(connection):
 	).pivot_table(index = 'Město', columns = 'Jméno', values = 'Hlasů')
 
 
-def get_map_data(regions_data):
+def get_map_data(regions_data: pd.DataFrame) -> gpd.GeoDataFrame:
 	df = (
 		regions_data.drop('Zpracováno %', axis = 1)
 		.melt(

@@ -11,15 +11,20 @@ def folium_static(
 	colors: list[str],
 	labels: list[str],
 	title: str,
-	width = 700,
-	height = 500,
-):
+	width: int = 700,
+	height: int = 500,
+) -> components.html:
 	fig = folium.Figure().add_child(fig)
 	fig = add_categorical_legend(fig, title, colors = colors, labels = labels)
 	return components.html(fig.render(), height = (fig.height or height) + 10, width = width)
 
 
-def add_categorical_legend(folium_map, title, colors, labels):
+def add_categorical_legend(
+	folium_map: folium.Figure,
+	title: str,
+	colors: list[str],
+	labels: list[str],
+) -> folium.Figure:
 	if len(colors) != len(labels):
 		raise ValueError('colors and labels must have the same length.')
 
