@@ -6,12 +6,12 @@ from matplotlib.lines import Line2D
 from st_pages import Page, show_pages
 from streamlit_autorefresh import st_autorefresh
 import folium
+import matplotlib
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 import pytz
 import streamlit as st
-import matplotlib
 
 import helpers.data_loading
 import helpers.formatting
@@ -171,6 +171,7 @@ for col in regions_data_table.columns:
 		continue
 	regions_data_table[col] = regions_data_table[col].apply(lambda x: helpers.formatting.format_thousands(x))
 regions_data_table['Zpracováno %'] = [f'{x:.2f}' for x in regions_data_table['Zpracováno %']]
+regions_data_table = regions_data_table.set_index('Kraj')
 regions_data_styled = regions_data_table.style.applymap(
 	helpers.formatting.highlight_percentage,
 	subset = ['Zpracováno %'],
