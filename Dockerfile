@@ -19,6 +19,6 @@ RUN chmod +x entrypoint.sh
 ENV PYTHONPATH /usr/src/app
 
 # because of Azure Web App
-EXPOSE 80
+EXPOSE 8501
 
 CMD ["./entrypoint.sh"]
