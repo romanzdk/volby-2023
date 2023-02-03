@@ -11,11 +11,17 @@ python = "^3.10"
 pandas = "^1.4.4"
 python-decouple = "^3.6"
 streamlit = "^1.7.0"
-psycopg2 = "^2.9.5"
 plotly = "^5.11.0"
 streamlit-autorefresh = "^0.0.1"
 geopandas = "^0.12.2"
 matplotlib = "^3.6.3"
+st-pages = "^0.3.1"
+psycopg2-binary = "^2.9.5"
+folium = "^0.14.0"
+mapclassify = "^2.5.0"
+
+[tool.poetry.group.dev.dependencies]
+ql-cq = "^1.4.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -10,4 +10,8 @@ COLORS = {
 	'Diviš': '#FFA15A',
 	'Zima': '#FECB52',
 }
+SECOND_ROUND_COLORS = {'Babiš': '#636EFA', 'Pavel': '#00CC96'}
 CANDIDATES_STRING = '"' + '", "'.join(COLORS) + '"'
+SECOND_ROUND_CANDIDATES_STRING = '"Pavel", "Babiš"'
+
+FIRST_ROUND_END_DATE = '2023-01-15'
